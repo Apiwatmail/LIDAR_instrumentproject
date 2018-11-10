@@ -33,7 +33,7 @@ dataCoor = ones(angle,angle,angle); %height x coor, y coor, height
 %         scan command here
     end 
 
-    function scan(angle,lidarVal)
+    function pushCoor = scan(angle,lidarVal)
         angle2length = 2*altitude*atan(angle); 
         xservoPosi = linspace(-angle2length/2,angle2length/2); % [xCoor] (based on angles)
         yservoPosi = linspace(-angle2length/2,angle2length/2); % [yCoor] (based on angles)
@@ -42,6 +42,12 @@ dataCoor = ones(angle,angle,angle); %height x coor, y coor, height
         matchSweep = dataCoor(:,:,lidarVal.height); 
     end
 
+newArrangeTable = dataSim(dataCoor); 
+    function comprss = dataSim(matrix)
+        comprss = (reshape(matrix,5,4))';
+        comprss(2:2:4,:) = fliplr(comprss(2:2:4,:));
+    end
+    
 % visualize
 figure1 
 heatmap(xServoPosi,yServoPosi,lidarVal.height); 
@@ -57,11 +63,10 @@ totalLand = False;
 
 
     function terrainAna()
-%         inclinX = diff(dataCoor..)/scanDotResulotion
+%         inclinX = diff(dataCoor())/scanDotResulotion
         inclinY = 
         tooSteep = slope > 5 %in deg
         heat3DMap = heatmap(tbl,xvar,yvar);
-%         tba
     end
 
     function landDecision()
