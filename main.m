@@ -7,7 +7,7 @@
 
 %% Import Data 
 board = arduino(port,board,{,}); 
-% lidar = ..;
+% lidar = board.something..;
 
 %% variable
 % Public variable
@@ -21,22 +21,35 @@ scannedCount = 0;
 initLoopVar = 1; 
 
 %% Mechanism class 
-function runMechnisms(angle) 
+function dataCoor = runMechnisms(angle) 
 topLever = 0;
 bottomLever = 0; 
 realTopSweep = topLever*servosGearing;
 realBottomSweep = bottomLever*servosGearing; 
 
-dataCoor = ones(angle,angle,angle); %height x coor, y coor, height
-    
-    for i = initLoopVar:angle
-%         scan command here
-    end 
+dataCoor = ones(angle,angle,angle); %x coor, y coor, height
+angle2length = 2*altitude*atand(angle);
 
+subcolPosi = angle2length; countBase = 1:subcolPosi; flipBase = fliplr(countBase); 
+Posi = ones(subrowPosi,subcolPosi); 
+    for r = 1:subcolPosi % create column position scan
+        for c = 1:subcolPosi
+            if rem(r,2) == 1
+                Posi(r,c) = countBase(c); 
+            else
+                Posi(r,c) = flipBase(c); 
+            end
+        end
+    end
+    rowPosi = repmat(1:subcolPosi,c,1); dataCoor = rowPosi(:)';
+    Posi = Posi'; Posi = Posi(:); dataCoor(:,2)=Posi; 
+        
     function pushCoor = scan(angle,lidarVal)
-        angle2length = 2*altitude*atan(angle); 
-        xservoPosi = linspace(-angle2length/2,angle2length/2); % [xCoor] (based on angles)
-        yservoPosi = linspace(-angle2length/2,angle2length/2); % [yCoor] (based on angles)
+         
+        xservoPosi = linspace(-angle2length/2,angle2length/2); % [xCoor] (based on angles); act as an counter
+        yservoPosi = linspace(-angle2length/2,angle2length/2); % [yCoor] (based on angles); act as an counter
+        
+        dictateDirection = 
         pushCoor = dataCoor(xservoPosi,yservoPosi); 
         
         matchSweep = dataCoor(:,:,lidarVal.height); 
