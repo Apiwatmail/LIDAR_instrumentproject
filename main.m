@@ -83,20 +83,19 @@ slopePosi = [];
 % subValLand = False; 
 totalLand = False; 
 
-    function terrainAna(terrainResponse)
-        planeCheck = abs(avg(surfnorm(terrainResponse))) < 5; %in deg 
-
-        for rC = 1:length(arrangedTable) % stone check 
-            for cC = 1:length(arrangedTable)
-                landChar = gradient(terrainResponse(rC,cC)); 
-                rockCheck = 0 <= abs(landChar) && abs(landChar) <= 5; %in deg
-                terrainResponse(rC,cC,2) = rockCheck; 
-            end 
-        end 
+    function [terrainResponse,planeCheck] = terrainAna(terrainResponse)
+        planeCheck = abs(avg(surfnorm(terrainResponse))) <= 5; %in deg 
         
+        landChar = gradient(terrainResponse); 
+        for rC = 1:length(arrangedTable) % stone check 
+            for cC = 1:length(arrangedTable)           
+                rockCheck = 0 <= abs(landChar(rC,cC)) && abs(landChar(rC,cC)) <= 5; %in deg
+                terrainResponse(rC,cC,2) = rockCheck(rC,cC); 
+            end 
+        end    
     end
 
-    function landDecision()
+    function landDecision(terrainResponse)
 %         tba
     end
 
