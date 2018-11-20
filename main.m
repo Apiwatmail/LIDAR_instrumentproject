@@ -5,6 +5,8 @@
 % code structure: Object Oriented
 % all lengths are in the SI unit, and agles are in degrees
 
+clc,clear,close 
+
 %% Import Data 
 % board = arduino(sort,board,{real,real});
 % lidar = board.something..;
@@ -13,7 +15,7 @@
 % Public variable
 trigger = input('Press any key to start the system'); 
 scanDotResulotion = 50; 
-stepNum = input('Insert the number of steps and press enter!')
+stepNum = input('Insert the number of steps and press enter! \n')
 servosGearing = 20/50; 
 topLever = [0 1];
 bottomLever = [0 1]; 
@@ -33,6 +35,7 @@ while scannedCount < 3
 end
 
 %% Mechanism class 
+
 
 
 function [dataCoor,arrangedTable] = runMechnisms(angle) 
@@ -107,7 +110,7 @@ totalLand = False;
         
         group = grp2idx(categorize); 
         idxStore = group == 1; 
-        
+        landdableStore = movsum(idxStore,5,'Endpoints','discard','omitnan')
 %         cumulate data
     end
 
