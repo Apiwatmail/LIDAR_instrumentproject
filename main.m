@@ -9,42 +9,47 @@ clc,clear,close all
 
 %% Import Data and set up devices 
 % board = arduino(sort,board,{real,real});
+% arduBoard = arduino();
+% s1=servo(arduBoard,'D7','MinPulseDuration',1000*10^-6,'MaxPulseDuration',2000*10^-6);
+% s2=servo(arduBoard,'D8','MinPulseDuration',1000*10^-6,'MaxPulseDuration',2000*10^-6);
+
 % lidar = board.something..;
 
 %% variable
 % Public variable
 trigger = input('Press any key to start the system'); 
+
+global scanDotResulotion stepNum scanAltitude
 scanDotResulotion = 50; 
 stepNum = 125; 
 servosGearing = 20/50; 
 topLever = [0 1];
 bottomLever = [0 1]; 
-scanAltitude = [36000 18000 2700]; % in mm 
-
+scanAltitude = [36000 18000 2700]; % in m
+ 
 %Initial value 
-angle = 0; 
+angle = [6 6 20]; 
 scannedCount = 0; 
 initLoopVar = 1; 
-topLever = [0 1];
-bottomLever = [0 1]; 
 
 %% Operational class 
-[dataCoor,arrangedTable] = runMechnisms(angle,scanAltitude); 
-while scannedCount < 3
-    [landingCoor,scannedCount] = analysis(terrainResponse); 
-end
+[dataCoor,arrangedTable] = runMechnisms(angle,scanAltitude,stepNum); 
+% while scannedCount < 3
+%     [landingCoor,scannedCount] = analysis(terrainResponse); 
+% end
 
 %% Mechanism class 
-function [dataCoor,arrangedTable] = runMechnisms(angle,scanAltitude) 
+function [dataCoor,arrangedTable] = runMechnisms(angle,scanAltitude,stepNum) 
     % create servo position table
     dataCoor = ones(stepNum^2,3); %x coor, y coor, height
-    angle2length = 2*scanAltitude*atand(angle); 
+    angle2length = 2*scanAltitude*tand(angle(1)/2); 
 
-    subcolPosi = angle2length; countBase = 1:subcolPosi; flipBase = fliplr(countBase); 
-    Posi = ones(subcolPosi,subcolPosi); 
+    subcolPosi = angle2length(1); 
+    countBase = linspace(1,subcolPosi,stepNum); flipBase = fliplr(countBase); 
+    Posi = ones(stepNum,stepNum); 
     
-    for r = 1:subcolPosi % create column position scan
-        for c = 1:subcolPosi
+    for r = 1:stepNum % create column position scan
+        for c = 1:stepNum
             if rem(r,2) == 1
                 Posi(r,c) = countBase(c); 
             else
@@ -52,13 +57,25 @@ function [dataCoor,arrangedTable] = runMechnisms(angle,scanAltitude)
             end
         end
     end
-    Posi = Posi'; Posi = Posi(:); dataCoor(:,2)=Posi; 
-    rowPosi = repmat(1:subcolPosi,c,1); dataCoor(:,1) = rowPosi(:)';
+    Posi = Posi'; Posi = Posi(:); dataCoor(:,2)=Posi;    
+    rowPosi = repmat(countBase,c,1); dataCoor(:,1) = rowPosi(:)';
+    
+    % send control to servos ===== behöver för betyder ============   
+    servoPosi = linspace(-angle2length(1)/2,angle2length(1)/2,stepNum);
+% % %     realTopSweep = topLever*servosGearing;
+% % %     realBottomSweep = bottomLever*servosGearing; 
+    
+    for i=0:0.2:1
+        writePosition(s1,i);
+        writePosition(s2,i);
+        pause(0.8);
+    end
 
-    % send control to servos ============ behöver för betyder ============
-    subPosi = linspace(-angle2length/2,angle2length/2,stepNum);
-    realTopSweep = topLever*servosGearing;
-    realBottomSweep = bottomLever*servosGearing; 
+    for j=1:-0.2:0
+        writePosition(s1,j);
+        writePosition(s2,j);
+        pause(0.8);
+    end
     % ==============================================
     
     for count = 1:length(dataCoor(:,1))
