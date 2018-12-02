@@ -52,24 +52,25 @@ global servosGearing topLever bottomLever stepNum
     Posi = ones(stepNum,stepNum); 
     servoPosi = linspace(0,1,stepNum);
     
-    % send control to servos ===== behöver för betyder ============   
+    % send control to servos  
     realTopSweep = topLever*servosGearing;
     realBottomSweep = bottomLever*servosGearing; 
-    
+    count = 1; 
     for r = 1:stepNum % create column position scan
         for c = 1:stepNum
             if rem(r,2) == 1
                 Posi(r,c) = countBase(c); 
                 writePosition(s1,servoPosi(r));
                 writePosition(s2,servoPosi(c));
-%                 dataCoor(count,3) = lidar.height; % get lidar altitude
-%                 value <<< tempDataCoor 1st?? 
+%                 dataCoor(count,3) = lidar.height; % get lidar altitude value 
+                count=count+1; 
                 pause(.01)
             else
                 Posi(r,c) = flipBase(c); 
                 writePosition(s1,servoPosi(r));
                 writePosition(s2,servoPosi(c));
 %                 dataCoor(count,3) = lidar.height; % get lidar altitude value
+                count = count + 1; 
                 pause(.01) 
             end
         end
@@ -78,9 +79,6 @@ global servosGearing topLever bottomLever stepNum
     rowPosi = repmat(countBase,c,1); dataCoor(:,1) = rowPosi(:)';
 
     % ==============================================
-    for count = 1:length(dataCoor(:,1))
-        dataCoor(count,3) = lidar.height; % get lidar altitude value 
-    end
 
 arrangedTable = ones(125,125); 
 for localCount = 1:length(dataCoor)
