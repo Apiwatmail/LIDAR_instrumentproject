@@ -19,10 +19,12 @@ clc,clear,close all
 % Public variable
 trigger = input('Press any key to start the system'); 
 
-global scanDotResulotion stepNum scanAltitude
+global scanDotResulotion stepNum servosGearing topLever bottomLever scanAltitude 
+global angle scannedCount initLoopVar
+
 scanDotResulotion = 50; 
 stepNum = 125; 
-servosGearing = 20/50; 
+servosGearing = 50/20; 
 topLever = [0 1];
 bottomLever = [0 1]; 
 scanAltitude = [36000 18000 2700]; % in m
@@ -33,13 +35,14 @@ scannedCount = 0;
 initLoopVar = 1; 
 
 %% Operational class 
-[dataCoor,arrangedTable] = runMechnisms(angle,scanAltitude,stepNum); 
+[dataCoor,arrangedTable] = runMechnisms(angle,scanAltitude); 
 % while scannedCount < 3
 %     [landingCoor,scannedCount] = analysis(terrainResponse); 
 % end
 
 %% Mechanism class 
-function [dataCoor,arrangedTable] = runMechnisms(angle,scanAltitude,stepNum) 
+function [dataCoor,arrangedTable] = runMechnisms(angle,scanAltitude) 
+global servosGearing topLever bottomLever stepNum 
     % create servo position table
     dataCoor = ones(stepNum^2,3); %x coor, y coor, height
     angle2length = 2*scanAltitude*tand(angle(1)/2); 
@@ -47,45 +50,36 @@ function [dataCoor,arrangedTable] = runMechnisms(angle,scanAltitude,stepNum)
     subcolPosi = angle2length(1); 
     countBase = linspace(1,subcolPosi,stepNum); flipBase = fliplr(countBase); 
     Posi = ones(stepNum,stepNum); 
+    servoPosi = linspace(0,1,stepNum);
+    
+    % send control to servos ===== behöver för betyder ============   
+    realTopSweep = topLever*servosGearing;
+    realBottomSweep = bottomLever*servosGearing; 
     
     for r = 1:stepNum % create column position scan
         for c = 1:stepNum
             if rem(r,2) == 1
                 Posi(r,c) = countBase(c); 
+                writePosition(s1,servoPosi(r));
+                writePosition(s2,servoPosi(c));
+%                 dataCoor(count,3) = lidar.height; % get lidar altitude
+%                 value <<< tempDataCoor 1st?? 
+                pause(.01)
             else
                 Posi(r,c) = flipBase(c); 
+                writePosition(s1,servoPosi(r));
+                writePosition(s2,servoPosi(c));
+%                 dataCoor(count,3) = lidar.height; % get lidar altitude value
+                pause(.01) 
             end
         end
     end
     Posi = Posi'; Posi = Posi(:); dataCoor(:,2)=Posi;    
     rowPosi = repmat(countBase,c,1); dataCoor(:,1) = rowPosi(:)';
-    
-    % send control to servos ===== behöver för betyder ============   
-    servoPosi = linspace(-angle2length(1)/2,angle2length(1)/2,stepNum);
-% % %     realTopSweep = topLever*servosGearing;
-% % %     realBottomSweep = bottomLever*servosGearing; 
-    
-    for i=0:0.2:1
-        writePosition(s1,i);
-        writePosition(s2,i);
-        pause(0.8);
-    end
 
-    for j=1:-0.2:0
-        writePosition(s1,j);
-        writePosition(s2,j);
-        pause(0.8);
-    end
     % ==============================================
-    
     for count = 1:length(dataCoor(:,1))
-        dataCoor(count,3) = scan(realTopSweep,realBottomSweep); % get lidar altitude value 
-    end
-    
-    function pushCoor = scan(topSweep,bottomSweep) %Obs! Behöver att byte 
-        lidar(topSweep); % row direction 
-        lidar(bottomSweep); % column direction 
-        pushCoor = lidar.height; 
+        dataCoor(count,3) = lidar.height; % get lidar altitude value 
     end
 
 arrangedTable = ones(125,125); 
