@@ -1,6 +1,7 @@
 % LiLa LIDAR Landing Spacecraft Instrument Project
 
-% Written by the behalf of LILA Team
+% Author: LILA Team
+% Modified: Joe Tee'r 
 
 % code structure: Object Oriented Programming 
 % all distances are in the SI unit, and agles are in degrees
@@ -83,33 +84,33 @@ global servosGearing topLever bottomLever stepNum s1 s2
 end
 
 %% Analysis class
-% function [landingCoor,scannedCount] = analysis(terrainResponse) 
-% flatPosi = [];
-% slopePosi = [];
-% totalLand = False; 
-% 
-%     function [terrainResponse,planeCheck] = terrainAna(terrainResponse)
-%         planeCheck = abs(avg(surfnorm(terrainResponse))) <= 5; %in deg !Auchtung: the degree might need to be changed 
-%          
-%         landChar = gradient(terrainResponse); 
-%         for rC = 1:length(arrangedTable) % stone check 
-%             for cC = 1:length(arrangedTable)           
-%                 rockCheck = 0 <= abs(landChar(rC,cC)) && abs(landChar(rC,cC)) <= 5; %in deg !!Samma anteckning som planeCheck 
-%                 terrainResponse(rC,cC,2) = rockCheck(rC,cC); 
-%             end 
-%         end    
-%     end
-% 
-%     % identify the characteristics
-%     edges = linspace(0,10,2); % Bin edges
-%     labels = strcat({'Land'},{'Do not Land'}); % Labels for the bins
-%     categorize = discretize(terrainResponse(:,:,2),'Categorical',labels);
-%     group = grp2idx(categorize); 
-%     idxStore = group == 1; 
-%     landableStore = movsum(idxStore,5,'Endpoints','discard','omitnan'); 
-%     
-%     % pick data
-%     % tba
-% 
-% scannedCount = scannedCount + 1; 
-% end
+function [landingCoor,scannedCount] = analysis(terrainResponse) 
+flatPosi = [];
+slopePosi = [];
+totalLand = False; 
+
+    function [terrainResponse,planeCheck] = terrainAna(terrainResponse)
+        planeCheck = abs(avg(surfnorm(terrainResponse))) <= 5; %in deg !Auchtung: the degree might need to be changed 
+         
+        landChar = gradient(terrainResponse); 
+        for rC = 1:length(arrangedTable) % stone check 
+            for cC = 1:length(arrangedTable)           
+                rockCheck = 0 <= abs(landChar(rC,cC)) && abs(landChar(rC,cC)) <= 5; %in deg !!Samma anteckning som planeCheck 
+                terrainResponse(rC,cC,2) = rockCheck(rC,cC); 
+            end 
+        end    
+    end
+
+    % identify the characteristics
+    edges = linspace(0,10,2); % Bin edges
+    labels = strcat({'Land'},{'Do not Land'}); % Labels for the bins
+    categorize = discretize(terrainResponse(:,:,2),'Categorical',labels);
+    group = grp2idx(categorize); 
+    idxStore = group == 1; 
+    landableStore = movsum(idxStore,5,'Endpoints','discard','omitnan'); 
+    
+    % pick data
+    % tba
+
+scannedCount = scannedCount + 1; 
+end
