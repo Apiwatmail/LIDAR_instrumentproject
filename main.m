@@ -10,7 +10,7 @@ clc,clear all,close all
 
 %% Import Data and set up devices 
 % board = arduino(sort,board,{real,real});
-
+  
 global arduBoard s1 s2
 arduBoard = arduino();
 s1=servo(arduBoard,'D7','MinPulseDuration',1000*10^-6,'MaxPulseDuration',2000*10^-6);
@@ -30,7 +30,7 @@ stepNum = 10;
 servosGearing = 50/20; 
 topLever = [0 1];
 bottomLever = [0 1]; 
-scanAltitude = [36000 18000 2700]; % in m
+scanAltitude = [36000 18000 2700]; % in mm
  
 %Initial value 
 angle = [6 6 20]; 
@@ -59,17 +59,14 @@ global servosGearing topLever bottomLever stepNum s1 s2
     realBottomSweep = bottomLever*servosGearing; 
 
     for r = 1:stepNum % create column position scan
-
         for c = 1:stepNum
             if rem(r,2) == 1
-                Posi(r,c) = countBase(c); 
                 writePosition(s1,servoPosi(r));
                 writePosition(s2,servoPosi(c));
 %                 rawDataTable(r,c) = lidar.height; % get lidar altitude value 
                 pause(.001)
                 
             else
-                Posi(r,c) = flipBase(c); 
                 writePosition(s1,servoPosi(r));
                 writePosition(s2,servoPosi(stepNum+1-c));
 %                 rawDataTable(r,c) = lidar.height; % get lidar altitude value 
@@ -83,11 +80,15 @@ global servosGearing topLever bottomLever stepNum s1 s2
 % heatmap(stepNum,stepNum,arrangedTable)
 end
 
+
+
 %% Analysis class
 function [landingCoor,scannedCount] = analysis(terrainResponse) 
 flatPosi = [];
 slopePosi = [];
 totalLand = False; 
+
+global scannedCount  
 
     function [terrainResponse,planeCheck] = terrainAna(terrainResponse)
         planeCheck = abs(avg(surfnorm(terrainResponse))) <= 5; %in deg !Auchtung: the degree might need to be changed 
@@ -113,4 +114,5 @@ totalLand = False;
     % tba
 
 scannedCount = scannedCount + 1; 
+% pause b4 another scan 
 end
