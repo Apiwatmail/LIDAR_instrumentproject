@@ -111,7 +111,7 @@ global scannedCount
     landableStore = movsum(idxStore,5,'Endpoints','discard','omitnan'); 
     
     % pick data
-    % tba
+    % tba 
 
 scannedCount = scannedCount + 1; 
 % pause b4 another scan 

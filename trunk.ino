@@ -9,7 +9,7 @@ Servo Servox10, Servox08;
 LIDARLite lidarLite;
 int cal_cnt = 0; int dist;
 
-int servoPin7 = 7; int servoPin8 = 8; // to small & large servos respectively
+int servoPin7 = 7; int servoPin8 = 8;
 int steps = 10;
 
 int dataStore [11] [11];
@@ -38,7 +38,7 @@ void setup(){
 
         Serial.print(dist);
         Serial.println(" cm");
-        //dataStore[r-1][c-1] = dist; // in cm 
+        dataStore[(r/100)-10][(c/100)-10] = dist; // in cm 
         delay(10);
       }
       else{
@@ -53,7 +53,7 @@ void setup(){
 
         Serial.print(dist);
         Serial.println(" cm");
-        //dataStore[r-1][c-1] = dist; // in cm 
+        dataStore[(r/100)-10][(c/100)-10] = dist; // in cm 
         delay(10);
       }
       // Increment reading counter
