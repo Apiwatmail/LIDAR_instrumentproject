@@ -27,8 +27,8 @@ void setup(){
   lidarLite.configure(0); // Change this number to try out alternate configuration 
 
   // mech control
-  for(int r = 1; r <= steps; r = r + 1 ){
-    for(int c = 1; i <= steps; c = c + 1){
+  for(int r = 1000; r <= 2000; r = r + 2000/steps ){
+    for(int c = 1; i <= 2000; c = c + 2000/steps){ 
       if(r%2 = 1){
         Servox08.writeMicroseconds(r);
         Servox10.writeMicroseconds(c);
