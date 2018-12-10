@@ -19,46 +19,47 @@ void setup(){
   Servox08.attach(servoPin7);
   Servox10.attach(servoPin8);
 
-  Servox08.writeMicroseconds(1000);
-  Servox10.writeMicroseconds(1000);
-
   Serial.begin(9600); // Initialize serial connection to display distance readings
   lidarLite.begin(0, true); // Set configuration to default and I2C to 400 kHz
   lidarLite.configure(0); // Change this number to try out alternate configuration 
 
   // mech control
-  for(int r = 1000; r <= 2000; r = r + 2000/steps ){
-    for(int c = 1000; c <= 2000; c = c + 2000/steps){ 
-      if(r%2 == 1){
+  for(int r = 1000; r <= 2000; r = r + 100 ){
+    for(int c = 1000; c <= 2000; c = c + 100 ){ 
+      if((r/100)%2 == 0){
         Servox08.writeMicroseconds(r);
         Servox10.writeMicroseconds(c);
         
         // At the beginning of every 100 readings, take a measurement with receiver bias correction
-        if ( cal_cnt == 0 ) {
+        /*if ( cal_cnt == 0 ) {
           dist = lidarLite.distance();}      // With bias correction
         else {
           dist = lidarLite.distance(false);} // Without bias correction
 
-        dataStore[r-1][c-1] = dist; // in cm 
+        dataStore[r-1][c-1] = dist; // in cm */
         delay(10);
       }
       else{
         Servox08.writeMicroseconds(r);
-        Servox10.writeMicroseconds(steps+1-c);
+        Servox10.writeMicroseconds(2100-c);
         
         // At the beginning of every 100 readings, take a measurement with receiver bias correction
-        if ( cal_cnt == 0 ) {
+        /*if ( cal_cnt == 0 ) {
           dist = lidarLite.distance();}      // With bias correction
         else {
           dist = lidarLite.distance(false);} // Without bias correction
 
-        dataStore[r][c] = dist; // in cm 
+        dataStore[r][c] = dist; // in cm */
         delay(10);
       }
       // Increment reading counter
-      cal_cnt++;
-      cal_cnt = cal_cnt % 100;
+      /*cal_cnt++;
+      cal_cnt = cal_cnt % 100;*/
     }
   }
 }
 
+void loop() {
+  // put your main code here, to run repeatedly:
+
+}
