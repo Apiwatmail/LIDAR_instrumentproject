@@ -9,7 +9,7 @@ Servo Servox10, Servox08;
 LIDARLite lidarLite;
 int cal_cnt = 0; int dist;
 
-int servoPin7 = 7; int servoPin8 = 8;
+int servoPin7 = 7; int servoPin8 = 8; // to small & large servos respectively
 int steps = 10;
 
 int dataStore [11] [11];
@@ -31,12 +31,14 @@ void setup(){
         Servox10.writeMicroseconds(c);
         
         // At the beginning of every 100 readings, take a measurement with receiver bias correction
-        /*if ( cal_cnt == 0 ) {
+        if ( cal_cnt == 0 ) {
           dist = lidarLite.distance();}      // With bias correction
         else {
           dist = lidarLite.distance(false);} // Without bias correction
 
-        dataStore[r-1][c-1] = dist; // in cm */
+        Serial.print(dist);
+        Serial.println(" cm");
+        //dataStore[r-1][c-1] = dist; // in cm 
         delay(10);
       }
       else{
@@ -44,21 +46,22 @@ void setup(){
         Servox10.writeMicroseconds(2100-c);
         
         // At the beginning of every 100 readings, take a measurement with receiver bias correction
-        /*if ( cal_cnt == 0 ) {
+        if ( cal_cnt == 0 ) {
           dist = lidarLite.distance();}      // With bias correction
         else {
           dist = lidarLite.distance(false);} // Without bias correction
 
-        dataStore[r][c] = dist; // in cm */
+        Serial.print(dist);
+        Serial.println(" cm");
+        //dataStore[r-1][c-1] = dist; // in cm 
         delay(10);
       }
       // Increment reading counter
-      /*cal_cnt++;
-      cal_cnt = cal_cnt % 100;*/
+      cal_cnt++;
+      cal_cnt = cal_cnt % 100;
     }
   }
 }
-
 void loop() {
   // put your main code here, to run repeatedly:
 
