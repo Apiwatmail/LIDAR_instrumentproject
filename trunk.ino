@@ -12,7 +12,7 @@ int cal_cnt = 0; int dist;
 int servoPin7 = 7; int servoPin8 = 8;
 int steps = 10;
 
-int dataStore[steps+1][steps+1]
+int dataStore [11] [11];
 
 void setup(){
   // import & set up control 
@@ -28,18 +28,18 @@ void setup(){
 
   // mech control
   for(int r = 1000; r <= 2000; r = r + 2000/steps ){
-    for(int c = 1; i <= 2000; c = c + 2000/steps){ 
-      if(r%2 = 1){
+    for(int c = 1000; c <= 2000; c = c + 2000/steps){ 
+      if(r%2 == 1){
         Servox08.writeMicroseconds(r);
         Servox10.writeMicroseconds(c);
         
         // At the beginning of every 100 readings, take a measurement with receiver bias correction
         if ( cal_cnt == 0 ) {
-          dist = lidarLite.distance();      // With bias correction} 
+          dist = lidarLite.distance();}      // With bias correction
         else {
-          dist = lidarLite.distance(false); // Without bias correction}
+          dist = lidarLite.distance(false);} // Without bias correction
 
-        dataStore[r][c] = dist; // in cm 
+        dataStore[r-1][c-1] = dist; // in cm 
         delay(10);
       }
       else{
@@ -48,9 +48,9 @@ void setup(){
         
         // At the beginning of every 100 readings, take a measurement with receiver bias correction
         if ( cal_cnt == 0 ) {
-          dist = lidarLite.distance();      // With bias correction} 
+          dist = lidarLite.distance();}      // With bias correction
         else {
-          dist = lidarLite.distance(false); // Without bias correction}
+          dist = lidarLite.distance(false);} // Without bias correction
 
         dataStore[r][c] = dist; // in cm 
         delay(10);
@@ -61,3 +61,4 @@ void setup(){
     }
   }
 }
+
