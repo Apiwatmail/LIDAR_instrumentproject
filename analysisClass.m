@@ -35,7 +35,7 @@ newTable = ones(11,11);
 for loc = 1:length(dataStore)
     newTable(dataStore(loc,1),dataStore(loc,2)) = dataStore(loc,3);
 end
-figure(1)
+figure
 hm = heatmap(1:11,1:11,newTable);
 
 
@@ -44,30 +44,29 @@ hm = heatmap(1:11,1:11,newTable);
 % =============================
 % [terr ainResponse,planeCheck] = terrainAna(newTable)
 X=1:11; Y=1:11; Z = newTable(X,Y);
-figure(2)
+figure
 s = surf(X,Y,Z,'FaceAlpha',0.8,'EdgeColor','interp');
 view([-14.0 45.1])
 colorbar
 
-function [terrainResponse,planeCheck] = terrainAna(terrainResponse)
-    planeCheck = abs(avg(surfnorm(terrainResponse))) <= deg2rad(5); %in deg !Auchtung: the degree might need to be changed 
+% function [terrainResponse,planeCheck] = terrainAna(terrainResponse)
+    planeCheck = abs(mean(surfnorm(newTable))) <= deg2rad(5); %in deg  
 
-    landChar = gradient(terrainResponse); 
-    for rC = 1:length(arrangedTable) % stone check 
-        for cC = 1:length(arrangedTable)           
-            rockCheck = 0 <= abs(landChar(rC,cC)) && abs(landChar(rC,cC)) <= 5; %in deg !!Samma anteckning som planeCheck 
-            terrainResponse(rC,cC,2) = rockCheck(rC,cC); 
+    landChar = gradient(newTable); 
+    for rC = 1:length(newTable) % stone check 
+        for cC = 1:length(newTable)           
+            rockCheck(rC,cC) = 0 <= abs(landChar(rC,cC)) && abs(landChar(rC,cC)) <= 5; %in deg
         end 
     end    
-end
+% end
 
-% % identify the characteristics
-% edges = linspace(0,10,2); % Bin edges
-% labels = strcat({'Land'},{'Do not Land'}); % Labels for the bins
-% categorize = discretize(terrainResponse(:,:,2),'Categorical',labels);
-% group = grp2idxCol(categorize); 
-% idxColStore = group == 1; 
-% landableStore = movsum(idxColStore,5,'Endpoints','discard','omitnan'); 
+% identify the characteristics
+edges = linspace(0,1,2); % Bin edges
+labels = strcat({'Land'},{'Do not Land'}); % Labels for the bins
+categorize = discretize(terrainResponse(:,:,2),'Categorical',labels);
+group = grp2idxCol(categorize); 
+idxColStore = group == 1; 
+landableStore = movsum(idxColStore,5,'Endpoints','discard','omitnan'); 
 % 
 % % pick data
 % % tba 
