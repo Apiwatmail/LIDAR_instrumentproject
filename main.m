@@ -13,8 +13,8 @@ clc,clear all,close all
   
 global arduBoard s1 s2
 arduBoard = arduino();
-s1=servo(arduBoard,'D7','MinPulseDuration',1000*10^-6,'MaxPulseDuration',2000*10^-6);
-s2=servo(arduBoard,'D8','MinPulseDuration',1000*10^-6,'MaxPulseDuration',2000*10^-6);
+s1=servo(arduBoard,'D7','MinPulseDuration',1200*10^-6,'MaxPulseDuration',1500*10^-6);
+s2=servo(arduBoard,'D8','MinPulseDuration',1300*10^-6,'MaxPulseDuration',1800*10^-6);
 
 % lidar = board.something..;
 
@@ -51,8 +51,8 @@ global servosGearing topLever bottomLever stepNum s1 s2
 
     subcolPosi = angle2length(1); 
     countBase = linspace(1,subcolPosi,stepNum); flipBase = fliplr(countBase); 
-    Posi = ones(stepNum,stepNum); 
-    servoPosi = linspace(0,1,stepNum);
+%     Posi = ones(stepNum,stepNum); 
+    servoPosi = linspace(0.4,.8,stepNum);
 
     % send control to servos  
     realTopSweep = topLever*servosGearing;
@@ -64,13 +64,13 @@ global servosGearing topLever bottomLever stepNum s1 s2
                 writePosition(s1,servoPosi(r));
                 writePosition(s2,servoPosi(c));
 %                 rawDataTable(r,c) = lidar.height; % get lidar altitude value 
-                pause(.001)
+                pause(.1)
                 
             else
                 writePosition(s1,servoPosi(r));
                 writePosition(s2,servoPosi(stepNum+1-c));
 %                 rawDataTable(r,c) = lidar.height; % get lidar altitude value 
-                pause(.001) 
+                pause(.1) 
             end
         end
     end
