@@ -1,3 +1,11 @@
+clc,clear 
+%% Open the text file.
+fileID = fopen('C:\Users\joe_a\Desktop\lidar result.txt','r','n','UTF-8');
+fseek(fileID, 3, 'bof');
+dataArray = textscan(fileID,'%f%C%[^\n\r]','Delimiter',' ','MultipleDelimsAsOne',true,'TextType','string','ReturnOnError',false);
+fclose(fileID);
+lidarresult = table(dataArray{1:end-1}, 'VariableNames', {'VarName1','cm'});
+clearvars fileID dataArray ans;
 %% Analysis class
 % output:: [landingCoor,scannedCount
 terrainResponse = lidarresult;
@@ -64,18 +72,40 @@ colorbar
 % identify the characteristics
 edges = 0:.5:1; % Bin edges
 labels = {'Do not Land','Land'}; % Labels for the bins
-categorizeVal = discretize(rockCheck,edges);
 categorizeLabl = discretize(rockCheck,edges,'Categorical',labels);
-idxStore = categorizeVal == 2;
-% landableStoreR = movsum(idxStore,5,1,'omitnan','Endpoints','discard'); 
-% refineLandR = sum(landableStoreR,2);
-% landableStoreC = movsum(idxStore,5,2,'omitnan','Endpoints','discard'); 
-% refineLandC = sum(landableStoreC,1);
+landableStoreR = movsum(rockCheck,3,1,'Endpoints','discard'); 
+[idRow1,idCol1] = find(landableStoreR==3); 
+landableStoreC = movsum(rockCheck,3,2,'Endpoints','discard'); 
+[idRow2,idCol2] = find(landableStoreC==3); 
+index1 = [idRow1 idCol1];
+index2 = [idRow2 idCol2];
 
-refineLandR = sum(landableStoreR,[3 4])
-refineLandC = sum(landableStoreR,[3 4])
+[res,ia,~]=unique(index1,'rows');
+[res2,ia2,~]=unique(index2,'rows');
+join=intersect(res,res2,'rows');
+landCoor=join((join(:,1)>1),:)
+
+% [C,ia,ic] = unique(col);
+% a_counts = accumarray(ic,1);
+% value_counts = [C, a_counts]
+% 
+% [D,ia2,ic2] = unique(row);
+% a_counts2 = accumarray(ic2,1);
+% value_counts2 = [D, a_counts2]
+
+% refineLandR = sum(idxStore,1);
+% refineLandC = sum(idxStore,2);
 
 % pick data 
-[selectLandC,idLandC]=max(refineLandC);
-[selectLandR,idLandR]=max(refineLandR);
-landResult = [idLandR+2 idLandC+2]
+% [selectLandC,idLandC]=max(refineLandC);
+% [selectLandR,idLandR]=max(refineLandR);
+% landResult = [idLandR+2 idLandC+2]
+
+
+
+
+
+
+
+
+
