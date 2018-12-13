@@ -53,20 +53,29 @@ colorbar
     planeCheck = abs(mean(surfnorm(newTable))) <= deg2rad(5); %in deg  
 
     landChar = gradient(newTable); 
+    rockCheck=ones(11,11);
     for rC = 1:length(newTable) % stone check 
         for cC = 1:length(newTable)           
-            rockCheck(rC,cC) = 0 <= abs(landChar(rC,cC)) && abs(landChar(rC,cC)) <= 5; %in deg
+            rockCheck(rC,cC) = deg2rad(0) <= abs(landChar(rC,cC)) && abs(landChar(rC,cC)) <= deg2rad(5); %in deg
         end 
     end    
 % end
 
 % identify the characteristics
-edges = linspace(0,1,2); % Bin edges
-labels = strcat({'Land'},{'Do not Land'}); % Labels for the bins
-categorize = discretize(terrainResponse(:,:,2),'Categorical',labels);
-group = grp2idxCol(categorize); 
-idxColStore = group == 1; 
-landableStore = movsum(idxColStore,5,'Endpoints','discard','omitnan'); 
-% 
-% % pick data
-% % tba 
+edges = 0:.5:1; % Bin edges
+labels = {'Do not Land','Land'}; % Labels for the bins
+categorizeVal = discretize(rockCheck,edges);
+categorizeLabl = discretize(rockCheck,edges,'Categorical',labels);
+idxStore = categorizeVal == 2;
+% landableStoreR = movsum(idxStore,5,1,'omitnan','Endpoints','discard'); 
+% refineLandR = sum(landableStoreR,2);
+% landableStoreC = movsum(idxStore,5,2,'omitnan','Endpoints','discard'); 
+% refineLandC = sum(landableStoreC,1);
+
+refineLandR = sum(landableStoreR,[3 4])
+refineLandC = sum(landableStoreR,[3 4])
+
+% pick data 
+[selectLandC,idLandC]=max(refineLandC);
+[selectLandR,idLandR]=max(refineLandR);
+landResult = [idLandR+2 idLandC+2]
