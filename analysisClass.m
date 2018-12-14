@@ -1,11 +1,11 @@
-clc,clear 
+% LiLa LIDAR Landing Spacecraft Instrument Project
+    % Author: LILA Team
+    % Modified: Joe Tee'r & Ben Biggs 
+
+    % all distances are in the SI unit, and agles are in degrees
+
+clc,clear all,close all 
 %% Open the text file.
-% fileID = fopen('C:\Users\joe_a\Desktop\Lidar2.txt','r','n','UTF-8');
-% fseek(fileID, 3, 'bof');
-% dataArray = textscan(fileID,'%f%C%[^\n\r]','Delimiter',' ','MultipleDelimsAsOne',true,'TextType','string','ReturnOnError',false);
-% fclose(fileID);
-% heightData = table(dataArray{1:end-1}, 'VariableNames', {'VarName1','cm'});
-% clearvars fileID dataArray ans;
 data=fopen('Lidar2.txt');
 heightData=fscanf(data, '%i');
 
@@ -13,12 +13,12 @@ heightData=fscanf(data, '%i');
 %need to be set by user
 steps = 50; %steps should be even
 scanAngle = 20; %scan angle in degrees
-points = steps + 1;
 halfAngle = scanAngle/2;
 servoAngle=asind((31.5*tand(halfAngle))/10);
 
 % x10 angle = theta, moves lidar sigma degrees about y axis
 % x08 angle = alpha, moves lidar beta degrees about x axis
+points = steps + 1;
 theta = linspace(servoAngle,-servoAngle,points);
 alpha = linspace(-servoAngle,servoAngle,points);
 
@@ -27,26 +27,13 @@ alpha = linspace(-servoAngle,servoAngle,points);
 sigma = atand((10*sind(theta))/31.5);
 beta = atand((10*sind(alpha))/31.5);
 
-%building matrix of beta values, beta values controlled by small servo, and
-%change x coord.
-betamatrix = zeros(points,points);
-
+%building matrix of beta & sigma values; beta values controlled by small servo, & change x coord. 
 for j = 1:points
     for i = 1:points
         betamatrix(j,i) = beta(i);
+        sigmamatrix(j,i) = sigma(j);
     end
 end
-betamatrix;
-
-%building matrix of sigma values
-sigmamatrix = zeros(points,points);
-
-for k=1:points
-    for l=1:points
-        sigmamatrix(k,l) = sigma(k);
-    end
-end
-sigmamatrix;
 
 %relationship between servo angles and sperical coordinate angles
 gamma = asind(sqrt(sind(betamatrix).^2 + sind(sigmamatrix).^2)); 
@@ -85,8 +72,8 @@ for c=1:points
 end
 
 %swap order of every second row
-for jj=2:2:points
-    r(jj,:)=fliplr(r(jj,:));
+for k=2:2:points
+    r(k,:)=fliplr(r(k,:));
 end
 r=r./100;
 
@@ -107,7 +94,6 @@ end
 figure
 surf(x,y,heightTable,'FaceAlpha',0.8,'EdgeColor','interp')
 colorbar
-
 figure
 hm = heatmap(heightTable);
 
@@ -122,7 +108,7 @@ landChar = gradient(heightTable);
 rockCheck=ones(11,11);
 for rC = 1:length(heightTable) % terrain check 
     for cC = 1:length(heightTable)           
-        rockCheck(rC,cC) = deg2rad(0) <= abs(landChar(rC,cC)) && abs(landChar(rC,cC)) <= deg2rad(5); %in deg
+        rockCheck(rC,cC) = 0 <= abs(landChar(rC,cC)) && abs(landChar(rC,cC)) <= deg2rad(5); %in deg
     end 
 end    
 
@@ -130,6 +116,7 @@ end
 edges = 0:.5:1; % Bin edges
 labels = {'Do not Land','Land'}; % Labels for the bins
 categorizeLabl = discretize(rockCheck,edges,'Categorical',labels); % Land/not land feedback
+
 % land area calculation 
 landableStoreR = movsum(rockCheck,10,1,'Endpoints','discard'); 
 [idRow1,idCol1] = find(landableStoreR==10); 
