@@ -6,12 +6,12 @@
 
 clc,clear all,close all 
 %% Open the text file.
-data=fopen('Lidar2.txt');
+data=fopen('Lidar.txt');
 heightData=fscanf(data, '%i');
 
 %% ===== table handle  ======== 
 %need to be set by user
-steps = 50; %steps should be even
+steps = input('Put the number of the steps >> '); %steps should be even
 scanAngle = 20; %scan angle in degrees
 halfAngle = scanAngle/2;
 servoAngle=asind((31.5*tand(halfAngle))/10);
@@ -53,8 +53,7 @@ for a=1:points
     for b=(points-steps/2):points
         if phi(b,a)>0
             phi(b,a)= phi(b,a)+180;
-        end
-        if phi(b,a)<0
+        else % phi(b,a)<0
             phi(b,a)= phi(b,a)+360;
         end
     end
@@ -128,7 +127,7 @@ index2 = [idRow2 idCol2+9]; % convert to a real index
 [res2,ia2,~]=unique(index2,'rows'); 
 join=intersect(res,res2,'rows');  
 landingCoor=join((join(:,1)>10 & join(:,1)<41),:);
-landingCoor=join((join(:,2)>10 & join(:,2)<41),:);
+landingCoor=landingCoor((landingCoor(:,2)>10 & landingCoor(:,2)<41),:);
 
 % print coordinates
 for finalPrint = 1:length(landingCoor)
