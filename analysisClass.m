@@ -53,7 +53,7 @@ for a=1:points
     for b=(points-steps/2):points
         if phi(b,a)>0
             phi(b,a)= phi(b,a)+180;
-        else % phi(b,a)<0
+        else % when phi(b,a)<0
             phi(b,a)= phi(b,a)+360;
         end
     end
@@ -98,14 +98,14 @@ hm = heatmap(heightTable);
 
 %% Analysis class
 % Check the average inclination 
-planeCheck = abs(mean(surfnorm(heightTable))) <= deg2rad(5);%in deg 
-verifyPlanecheck = any(planeCheck(:)); choiceBox1 = ['Pass' 'Fail']; 
+planeCheck = abs(mean(surfnorm(heightTable))) <= deg2rad(5);% measure the overall inclination  
+verifyPlanecheck = any(planeCheck(:)); choiceBox1 = ['Pass' 'Fail']; % decide for the result 
 fprintf('Landing field inclination check %s\n',choiceBox1(verifyPlanecheck))
 
 % Check the terrain characteristics
-landChar = gradient(heightTable); 
+landChar = gradient(heightTable); %find the slope between each of scanned points
 rockCheck=ones(11,11);
-for rC = 1:length(heightTable) % terrain check 
+for rC = 1:length(heightTable) % terrain inclinaion check 
     for cC = 1:length(heightTable)           
         rockCheck(rC,cC) = 0 <= abs(landChar(rC,cC)) && abs(landChar(rC,cC)) <= deg2rad(5); %in deg
     end 
